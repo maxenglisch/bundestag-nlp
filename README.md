@@ -1,138 +1,66 @@
-# Multimodal_Parliament_Explorer_8_3
+# Projektbeschreibung
 
-# Inhaltsverzeichnis
-1. [Vorstellung des Squads](#der-squad)
-2. [Beschreibung des Projektes](#beschreibung-des-projektes)
-3. [Kurzbeschreibung](#kurzbeschreibung)
-4. [Installation](#installation)
-5. [Benutzung](#benutzung)
-6. [Wichtige Methoden](#wichtige-methoden)
-7. [Routen](#routen)
-8. [Laufzeit](#laufzeit)
-9. [Fehlerquellen](#fehlerquellen)
+### Ziel des Projekts
+---
 
+Diesmal ist das Ziel, eine NLP Analyse mit gegebenen Tools (Spacy, GerVader, WhisperX) durchzuführen auf zwei Redevideos, die uns gegeben wurden. 
+Einmal analysieren wir den Text der Rede an sich, dann lassen wir das Video mit Whisper transkribieren und analysieren dann diesen Text nochmal genauso mit spacy und gervader. 
+Dann wird das alles schön dargestellt auf einer Website mit Rede Video, sentiment analyse auf satzebene und Diagramme für POS Typen und Named Entities.
 
-## Der Squad
+---
 
-<table style="border-collapse: collapse; border: none;">
-  <tr>
-    <th style="border: none;">Tony (Musiker)</th>
-    <th style="border: none;">Max (Vater)</th>
-    <th style="border: none;">Grischa (Lowperformer)</th>
-    <th style="border: none;">Ben (Baller)</th>
-  </tr>
-  <tr>
-    <td style="border: none;"><img src="anton1.png" width="180"></td>
-    <td style="border: none;"><img src="max1.png" width="200"></td>
-    <td style="border: none;"><img src="grischa.png" width="215"></td>
-    <td style="border: none;"><img src="Ben1.png" width="225"></td>
-  </tr>
-</table>
+## Programm Aufbau (Packages, Klassen etc. )
+
+### **RESTHandler**
+Der RestHandler übernimmt auch wieder die neue ROUTE: nlp_analysen, wo diesmal alles drauf zu sehen ist. 
+
+- **1. Starseite**:
+  - Route: /
+  - Methode: GET
+  - Funktion: Zeigt die Startseite mit Links zu den wichtigsten Seiten (Übersicht, Historie).
+  - Template: home.ftl
+
+- **2. NLP Analysen**:
+  - Route: /nlp_analysen
+  - Methode: GET
+  - Funktion: NLP Analysen anzeigen
+  - Template: nlp_analysen.ftl
 
 
+### **NLP**
+Das neue Package NLP kümmert sich um die ganzen Remote Driver von SpAcy, GerVader und Whisper. 
+nlpPipeline ist für das Setup verantwortlich 
+nlpAnalyse führt die Sachen wirklich aus, auf den Videos und den Reden an sich. 
+
+### **MongoImpls**
+
+Diesmal ist eine neue NLP_Analyse Mongo Impl für die Serialisierung der Cas Objekte dazugekommen. Hier sind vor allem die Getter wieder sehr wichtig. 
+Man kann einfach die id oder Sentiments, POS, und alles weitere einfach so mit den Gettern direkt aus der DB ziehen, ohne über die Cas gehen zu müssen. 
 
 
-# Beschreibung des Projektes
 
-Das Projekt Übung 4 baut auf meiner vorherigen Projekten Übung 2 und 3 auf. Ich gehe in dieser ReadMe also nur auf die Erweiterung ein,
-welche für diese Übung notwending sind. Für die anderen Informationen, bitte meine ReadMe zur Übung 2 und 3 sonst lesen.
+---
 
-Ich habe ein Programm gebaut, welches mithilfe von NLP-Methoden Reden analysieren kann und wichtige Informationen, wie Sentiments, Named Entities etc.
-extrahiert und speichert, diese Information werden in der Datenbank gespeichert.
+## Anleitung zur Benutzung
 
-Zusätzlich könnnen für Videos von Reden mithilfe von Whisper Transkripte erstellt werden, welche auch mit NLP-Analysen analysiert werden.
+Also eigentlich einfach die Main Klasse starten und dann sollte alles laufen.
+Sollte eigentlich instant gehen. 
 
-Außerdem wird dann auf einer Website die Ergebnisse der Analyse mit Diagrammen dargestellt, sowie den Text der Rede mit der Färbung vom Sentiment
-und das Video wird bereitgestellt.
-
-
-## Kurzbeschreibung
-- Analyse von Redetexten mithilfe von NLP-Methoden
-- Hochladen der Daten in eine MongoDB-Datenbank
-- HTML Webseiten erstellen mit Javalin und Freemarker:
-    - Diagramme
-    - Video
-    - RedeText
-
-## Installation
-
-- Um das Programm zu nutzen, muss mindesten Java 17 installiert sein
-- Eine Entwicklerumgebung wie IntelliJ um das Programm auszuführen
-- Maven für die Dependencys
-- Eine MongoDB-Datenbank
-- Goethe-Uni VPN um Spacy, Gervader und Whisper zu nutzen
-- Einen Browser um die Websiten zu nutzen
-
-## Benutzung
+### **DB Anbindung**
+- Die properties müssen in db.properties in `src/main/resources/` liegen und dort sind alle infos für die URI connection
+- VPN Verbindung muss an sein (goethe vpn)
 
 
-### 1. Main ausführen
+### **Main.java**
+- Einfach ausführen, dann sollte alles losgehen und mit prints in der Konsole kriegt man einen Überblick was passiert 
+- (alle DB Sachen dauern lange, der Rest geht schnell)
 
-Um das Programm zu nutzen, muss die Main ausgeführt werden. Standardmäßig werden alle wichtigen Funktionen in der Main über die Factory aufgerufen.
-In diesem Projekt wird nur die startRest methode aufgerufen, welche das ganze Restful und Javalin macht.
-Wenn man die NLP-Analysen nochmal durchführen möchte, muss man factory.redenAnalysieren(); ausklammer und nutzen.
+### Auf der Website:
+- Hier dann einfach auf die Seite gehen, die du willst, also nlp Analysen direkt 
+- Hier siehst du dann Videos, Sentiment pro Satz und die Diagramme, das Hervorheben habe ich nicht mehr geschafft. 
+---
 
-### 2. HTMLs anschauen
-Danach muss http://localhost:7070/ im Browser geöffnet werden. Und man kann die Webapplikation nutzen.
-Man startet auf der Startseite und dort kann man dann die zwei Links auswählen, zu den beiden Analysen.
+## Hinweise
 
-### 3. Video anschauen
-Auf der Website kann dann das Video angeschaut werden, sowie die Diagramme und den Redetext.
-
-## Wichtige Methoden
-
-### 1. Factory erstllen
-- `Factory factory = new Factory()`
-
-Zuerst wird eine Factory in der Main erstellt um das Programm zu nutzen
-
-
-### 2. Webapplikation starten
-
-- `factory.startRest()`
-
-Methode initialisert die Webapplikation, d.h. Javalin mit Restful wird gestartet und alle Routen werden initialisiert.
-Der Nutzer kann das Progamm nutzen.
-
-### 3. NLP-Analyse starten
-
-- `factory.redenAnalysieren()`
-
-Methode analysiert die beiden Redentexte aus der Datenbank, dann wird Whisper genutzt um Transkripte für die Videos zu erstellen
-und dann werden diese auch noch analysiert und in der Datenbank gespeichert.
-
-## Routen
-
-### 1. Startseite
-- `web.get("/", ctx -> {...});`
-
-Eine get-Route um Informationen für die Startseite zu holen und zu rendern, wenn "/" aufgerufen wird
-
-### 2. Rede
-- `web.get("/rede", ctx -> {...});`
-
-Eine get-Route um Informationen für die Redenseite mit NLP-Analyse zu holen und zu rendern, wenn "/rede" mit einer id aufgerufen wird
-
-### 3. Video
-- `web.get("/video", ctx -> {...});`
-
-Eine get-Route um das jeweilige Video für die Website bereitzustellen.
-
-### 4. Image
-- `web.get("/image", ctx -> {...});`
-
-Eine get-Route um das jeweilige Bild für das sehr schöne Diagramm auf der Startseite zu returnen.
-
-## Laufzeit
-
-Alle Websiten sollten direkt geladen werden und auch das Video sollte direkt verfügbar sein.
-Das Diagramm auf der Startseite lässt die Seite kurz ein bisschen laggen wenn es geladen wird.
-
-
-## Fehlerquellen
-
-- Dateien fehlen oder Ordner fehlen z.B. database.properties oder javelin.properties
-- Nicht mit der Datenbank verbunden
-- VPN nicht verbunden
-
-
+- Programmausführung über `Main.java`, einfach die main methode ausführen dann sollte alles laden. 
+- Dann einfach unten im Terminal auf den Link gehen: http://localhost:7070/
